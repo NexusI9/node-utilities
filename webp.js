@@ -3,10 +3,11 @@ const path = require('path');
 const sharp = require('sharp');
 const homeDir = require('os').homedir();
 
-const RESIZE_EXCLUDE_SUFFIX = /(wide_)/;
+const RESIZE_EXCLUDE_PREFIX = ["wide-","video-"];
 const OUPUT_DIR = `${homeDir}/Desktop/webp`;
 const QUALITY = 100;
 
+const filterPrefix = new RegExp(`^(${RESIZE_EXCLUDE_PREFIX.join('|')})`);
 
 function createOutputDir() {
 
@@ -55,7 +56,7 @@ async function convertDirectoryToWebP(inputDir, outputDir, maxwidth) {
       const outFile = path.join(outputDir, path.basename(file, path.extname(file)) + '.webp');
       await sharp(filePath)
         .resize({
-          width: !RESIZE_EXCLUDE_SUFFIX.test(file) && maxwidth ? parseInt(maxwidth) : null,
+          width: !file.match(filterPrefix) && parseInt(maxwidth) || null,
           withoutEnlargement: true
         })
         .toFile(outFile, { quality: QUALITY });
