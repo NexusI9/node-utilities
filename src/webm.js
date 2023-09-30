@@ -4,7 +4,7 @@ const path = require('path');
 const ffmpeg = require('fluent-ffmpeg');
 const ffmpegPath = require('@ffmpeg-installer/ffmpeg').path;
 
-const BITRATE = 8; //bits
+const BITRATE = [1,2]; //Mbits
 
 //go through a directory and replace MP4 to WEBM
 
@@ -15,10 +15,10 @@ ffmpeg.setFfmpegPath(ffmpegPath);
 function convertToWebM(inputFile, outputFile, resizeWidth = null) {
   return new Promise((resolve, reject) => {
     const command = ffmpeg(inputFile).videoCodec('libvpx') //libvpx-vp9 could be used too
-      .videoBitrate(BITRATE*1000, true) 
+      .videoBitrate(BITRATE[1]*1000, true) 
       .outputOptions(
-        '-minrate', '1000',
-        '-maxrate', '8000',
+        '-minrate', BITRATE[0],
+        '-maxrate', BITRATE[1]*1000,
         '-threads', '3', //Use number of real cores available on the computer - 1
         '-flags', '+global_header', //WebM won't love if you if you don't give it some headers
         '-psnr') //Show PSNR measurements in output. Anything above 40dB indicates excellent fidelity
