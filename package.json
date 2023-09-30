@@ -8,7 +8,10 @@
   "author": "NEK",
   "license": "ISC",
   "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "colors": "^1.4.0",
+    "ffmpeg-installer": "^1.0.2",
+    "fluent-ffmpeg": "^2.1.2",
     "sharp": "^0.32.0"
   },
   "description": ""
