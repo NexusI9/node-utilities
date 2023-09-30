@@ -5,7 +5,7 @@ const path = require('path');
 const sharp = require('sharp');
 
 const DEFAULT_SIZE = 450;
-const DEFAULT_PREFIX = "s_";
+const DEFAULT_PREFIX = "-s";
 
 function resizeImage(inputPath, outputPath, width) {
     return sharp(inputPath)
@@ -46,8 +46,10 @@ function processImagesInDirectory(directory, width, command) {
                     switch (command) {
                         case 'resize':
                             const extname = path.extname(filePath).toLowerCase();
+                            const {name} = path.parse(filePath);
+
                             if (['.jpg', '.jpeg', '.png', '.webp'].includes(extname)) {
-                                const outputFileName = `${DEFAULT_PREFIX}${file}`;
+                                const outputFileName = `${name}${DEFAULT_PREFIX}${extname}`;
                                 const outputPath = path.join(directory, outputFileName);
         
                                 resizeImage(filePath, outputPath, width)
@@ -63,7 +65,7 @@ function processImagesInDirectory(directory, width, command) {
 
                         case 'purge':
                             console.log(file);
-                            if(file.match(/^s_/)){ removeImage(filePath); }
+                            if(file.match(/-s\./)){ removeImage(filePath); }
                         break;
                     }
                 }
