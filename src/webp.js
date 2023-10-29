@@ -9,23 +9,23 @@ const QUALITY = 100;
 
 const filterPrefix = new RegExp(`^(${RESIZE_EXCLUDE_PREFIX.join('|')})`);
 
-function createOutputDir() {
+function createOutputDir(outputDir) {
 
   const make = () => new Promise( (resolve, reject) => {
-    fs.mkdir(OUPUT_DIR, { recursive: true }, (err) => {
+    fs.mkdir(outputDir, { recursive: true }, (err) => {
       if (err) { reject(err); }
       else{ resolve(true); }
     });
   });
 
   return new Promise((resolve, reject) => {
-    fs.access(OUPUT_DIR, (err) => {
+    fs.access(outputDir, (err) => {
       if (err) {
         make()
           .then( () => resolve(true) )
           .catch( (err) => reject(err) );
       } else {
-        fs.rm(OUPUT_DIR, {recursive: true} , (err) => {
+        fs.rm(outputDir, {recursive: true} , (err) => {
           if(err){ reject(err); }
           make()
           .then( () => resolve(true) )
@@ -37,16 +37,17 @@ function createOutputDir() {
 
 }
 
-async function convertDirectoryToWebP(inputDir, outputDir, maxwidth) {
+async function convertDirectoryToWebP(inputDir,outputDir, maxwidth) {
 
   //process files
   const files = await fs.promises.readdir(inputDir);
   const tasks = files.map(async (file) => {
-   
+    if(file === "webp"){ return; }
     const filePath = path.join(inputDir, file);
     const stat = await fs.promises.stat(filePath);
+
     if (stat.isDirectory()) {
-      const subdir = path.join(OUPUT_DIR, file);
+      const subdir = path.join(outputDir, file);
       await fs.promises.mkdir(subdir, { recursive: true });
 
       await convertDirectoryToWebP(filePath, subdir, maxwidth);
@@ -73,7 +74,9 @@ if (!inputDir) {
   process.exit(1);
 }
 
-createOutputDir()
-.then(() => convertDirectoryToWebP(inputDir, OUPUT_DIR, MAX_WIDTH))
+const outputDir = `${inputDir}/webp`;
+
+createOutputDir(outputDir)
+.then(() => convertDirectoryToWebP(inputDir,outputDir,MAX_WIDTH))
 .then(() => console.log('Conversion completed successfully.'))
 .catch((err) => console.error('Conversion failed:', err));
