@@ -86,13 +86,14 @@ async function main(directory, resizeWidth = null, resizeHeight = null) {
     return;
   }
 
+  fs.mkdirSync(path.join( directory, 'webm'), { recursive: true });
+
   for (const mp4File of mp4Files) {
-    const webmFile = mp4File.replace('.mp4', '.webm');
+    const webmFile = path.join(directory,'webm', path.basename(mp4File, '.mp4') + '.webm');;
 
     try {
       console.log(`Converting ${mp4File} to ${webmFile}`);
       await convertToWebM(mp4File, webmFile, resizeWidth, resizeHeight);
-      moveFileToDesktop(mp4File);
       console.log(`\n\nConversion completed.`);
     } catch (error) {
       console.error(`Error converting ${mp4File}: ${error.message}`);
