@@ -1,3 +1,6 @@
+//convert pictures from directory to webm
+
+
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
